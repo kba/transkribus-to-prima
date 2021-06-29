@@ -14,6 +14,11 @@ class TranskribusFixer():
     def __init__(self, tree):
         self.tree = tree
 
+    def fix_metadata(self):
+        el_metadata = self.tree.find('//p2013:TranskribusMetadata', NS)
+        if el_metadata is not None:
+            el_metadata.getparent().remove(el_metadata)
+
     def fix_reading_order(self):
         ro = self.tree.find('//p2013:ReadingOrder/p2013:OrderedGroup', NS)
         relations = self.tree.find('//p2013:Relations', NS)
@@ -52,7 +57,7 @@ class TranskribusFixer():
         return ET.tostring(self.tree, pretty_print=True, encoding='utf-8').decode('utf-8').replace(NS2013, NS2019)
 
 @command()
-@option('-f', '--fixes', help="Fixes to apply. Repeatable", type=Choice(['reading_order', 'table']), multiple=True)
+@option('-f', '--fixes', help="Fixes to apply. Repeatable", type=Choice(['reading_order', 'table', 'metadata']), multiple=True)
 @argument('input-file', nargs=1)
 @argument('output-file', nargs=1)
 def cli(fixes, input_file, output_file):
