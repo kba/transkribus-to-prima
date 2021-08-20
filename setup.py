@@ -14,7 +14,8 @@ setup(
     entry_points={
         'console_scripts': [
             'transkribus-fixer=transkribus_fixer.cli:cli',
-            'page-fix-coordinates=transkribus_fixer.cli_coordinate_fixer:cli'
+            'page-fix-coordinates=transkribus_fixer.cli_coordinate_fixer:cli',
+            'page-dimensions-from-image=transkribus_fixer.set_dimensions_from_image:cli'
         ]
     },
 )
