@@ -52,4 +52,4 @@ class TranskribusFixer():
                     el_region.append(el_textline)
 
     def tostring(self):
-        return ET.tostring(self.tree, pretty_print=True, encoding='utf-8').decode('utf-8').replace(NS2013, NS2019)
+        return ET.tostring(self.tree, pretty_print=True, encoding='utf-8').decode('utf-8')
