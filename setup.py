@@ -13,7 +13,8 @@ setup(
     packages=['transkribus_fixer'],
     entry_points={
         'console_scripts': [
-            'transkribus-fixer=transkribus_fixer.cli:cli'
+            'transkribus-fixer=transkribus_fixer.cli:cli',
+            'page-fix-coordinates=transkribus_fixer.cli_coordinate_fixer:cli'
         ]
     },
 )
