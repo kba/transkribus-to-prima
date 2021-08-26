@@ -14,8 +14,7 @@ def cli(fixes, input_file, output_file):
     Also converts PAGE2013 to PAGE2019 when writing to OUTPUT_FILE.
     """
     fixer = TranskribusFixer(ET.parse(input_file))
-    # for fix in [f in fixes if f != 'namespace']:
-    for fix in []:
+    for fix in [f for f in fixes if f != 'namespace']:
         getattr(fixer, f'fix_{fix}')()
     with open('/dev/stdout' if output_file == '-' else output_file, 'w') as f:
         as_str = fixer.tostring()
