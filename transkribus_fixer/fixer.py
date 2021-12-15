@@ -68,4 +68,7 @@ class TranskribusFixer():
                         el_region.append(node)
 
     def tostring(self):
-        return ET.tostring(self.tree, pretty_print=True, encoding='utf-8').decode('utf-8')
+        return ET.tostring(self.tree,
+                           pretty_print=True,
+                           xml_declaration=True,
+                           encoding='utf-8').decode('utf-8')
