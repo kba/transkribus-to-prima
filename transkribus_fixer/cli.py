@@ -1,3 +1,4 @@
+from pkg_resources import resource_filename
 from click import command, Choice, File, argument, option
 from lxml import etree as ET
 
@@ -7,9 +8,10 @@ from .fixer import TranskribusFixer, NS
 @option('-f', '--fixes', help="Fixes to apply. Repeatable [default: all].",
         default=['reading_order', 'table', 'metadata', 'namespace'],
         type=Choice(['reading_order', 'table', 'metadata', 'namespace']), multiple=True)
+@option('-V', '--validate', help="Validate output against schema.", is_flag=True)
 @argument('input-file', type=File('r'), nargs=1)
 @argument('output-file', default='-', type=File('w'), nargs=1)
-def cli(fixes, input_file, output_file):
+def cli(fixes, validate, input_file, output_file):
     """
     Transform (Transkribus PAGE) INPUT_FILE to (PRImA PAGE) OUTPUT_FILE under the chosen fixes.
 
@@ -21,6 +23,15 @@ def cli(fixes, input_file, output_file):
     as_str = fixer.tostring()
     if 'namespace' in fixes:
         as_str = as_str.replace(NS['p2013'], NS['p2019'])
+    if validate:
+        if 'namespace' not in fixes and fixer.tree.getroot().tag == "{%s}PcGts" % NS['p2013']:
+            schema = resource_filename(__name__, 'page2013.xsd')
+        else:
+            schema = resource_filename(__name__, 'page2019.xsd')
+        schema = ET.parse(schema)
+        schema = ET.XMLSchema(schema)
+        #schema.assertValid(fixer.tree) # may need namespace fixer
+        schema.assertValid(ET.fromstring(as_str.encode('utf-8')))
     output_file.write(as_str)
 
 if __name__ == "__main__":
