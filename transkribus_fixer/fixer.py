@@ -48,6 +48,7 @@ class TranskribusFixer():
                 el_tablecellrole.set('columnIndex', el_cell.get('col'))
                 el_tablecellrole.set('rowSpan', el_cell.get('rowSpan', '1'))
                 el_tablecellrole.set('colSpan', el_cell.get('colSpan', '1'))
+                el_tablecellrole.set('header', el_cell.get('label', "false"))
                 for att in ['orientation', 'id']:
                     if att in el_cell.attrib:
                         el_region.set(att, el_cell.get(att))
