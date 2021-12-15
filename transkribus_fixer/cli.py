@@ -4,7 +4,9 @@ from lxml import etree as ET
 from .fixer import TranskribusFixer, NS
 
 @command(context_settings={'help_option_names': ['-h', '--help']})
-@option('-f', '--fixes', help="Fixes to apply. Repeatable", type=Choice(['reading_order', 'table', 'metadata', 'namespace']), multiple=True)
+@option('-f', '--fixes', help="Fixes to apply. Repeatable [default: all].",
+        default=['reading_order', 'table', 'metadata', 'namespace'],
+        type=Choice(['reading_order', 'table', 'metadata', 'namespace']), multiple=True)
 @argument('input-file', type=File('r'), nargs=1)
 @argument('output-file', default='-', type=File('w'), nargs=1)
 def cli(fixes, input_file, output_file):
