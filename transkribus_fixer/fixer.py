@@ -41,19 +41,31 @@ class TranskribusFixer():
             for el_cell in el_table.xpath('*[local-name()="TableCell"]'):
                 el_table.remove(el_cell)
                 el_region = ET.SubElement(el_table, '{%s}TextRegion' % NS2013)
-                el_region.insert(0, el_cell.xpath('*[local-name()="Coords"]')[0])
-                el_roles = ET.SubElement(el_region, '{%s}Roles' % NS2013)
+                for att in ['id', 'custom', 'comments', 'continuation', 'production',
+                            'orientation', 'type', 'leading', 'indented', 'align',
+                            'readingDirection', 'readingOrientation', 'textLineOrder',
+                            'primaryLanguage', ',secondaryLanguage',
+                            'primaryScript', 'secondaryScript']:
+                    if att in el_cell.attrib:
+                        el_region.set(att, el_cell.get(att))
+                for node in el_cell.iterchildren("{*}AlternativeImage", "{*}Coords",
+                                                 "{*}UserDefined", "{*}Labels",
+                                                 "{*}Roles"):
+                    el_region.append(node)
+                el_roles = el_region.find('{*}Roles')
+                if el_roles is None:
+                    el_roles = ET.SubElement(el_region, '{%s}Roles' % NS2013)
+                # NS2013 does not have TableCellRole, so we implicitly rely on the namespace fixer here
                 el_tablecellrole = ET.SubElement(el_roles, '{%s}TableCellRole' % NS2013)
                 el_tablecellrole.set('rowIndex', el_cell.get('row'))
                 el_tablecellrole.set('columnIndex', el_cell.get('col'))
                 el_tablecellrole.set('rowSpan', el_cell.get('rowSpan', '1'))
                 el_tablecellrole.set('colSpan', el_cell.get('colSpan', '1'))
                 el_tablecellrole.set('header', el_cell.get('label', "false"))
-                for att in ['orientation', 'id']:
-                    if att in el_cell.attrib:
-                        el_region.set(att, el_cell.get(att))
-                for el_textline in el_cell.xpath('*[local-name()="TextLine"]'):
-                    el_region.append(el_textline)
+                for node in el_cell.iterchildren():
+                    if any(node.tag.endswith(suf)
+                           for suf in ['Region', 'TextLine', 'TextEquiv', 'TextStyle']):
+                        el_region.append(node)
 
     def tostring(self):
         return ET.tostring(self.tree, pretty_print=True, encoding='utf-8').decode('utf-8')
