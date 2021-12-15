@@ -6,8 +6,8 @@ from .fixer import TranskribusFixer, NS
 
 @command(context_settings={'help_option_names': ['-h', '--help']})
 @option('-f', '--fixes', help="Fixes to apply. Repeatable [default: all].",
-        default=['reading_order', 'table', 'metadata', 'namespace'],
-        type=Choice(['reading_order', 'table', 'metadata', 'namespace']), multiple=True)
+        default=['reading_order', 'table', 'textequiv', 'metadata', 'namespace'],
+        type=Choice(['reading_order', 'table', 'textequiv', 'metadata', 'namespace']), multiple=True)
 @option('-V', '--validate', help="Validate output against schema.", is_flag=True)
 @argument('input-file', type=File('r'), nargs=1)
 @argument('output-file', default='-', type=File('w'), nargs=1)
