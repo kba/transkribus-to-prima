@@ -13,11 +13,13 @@ class TranskribusFixer():
         self.tree = tree
 
     def fix_metadata(self):
+        """Remove any Metadata/TranskribusMetadata"""
         el_metadata = self.tree.xpath('//*[local-name()="TranskribusMetadata"]')
         if el_metadata:
             el_metadata[0].getparent().remove(el_metadata[0])
 
     def fix_reading_order(self):
+        """Convert ???"""
         ro = self.tree.xpath('//*[local-name()="ReadingOrder"]/*[local-name()="OrderedGroup"]')[0]
         relations = self.tree.xpath('//*[local-name()="Relations"]')
         if not relations:
@@ -37,6 +39,7 @@ class TranskribusFixer():
             relations.getparent().remove(relations)
 
     def fix_table(self):
+        """Convert each TableRegion/TableCell into a TableRegion/TextRegion, writing row/col index/span as new TableCellRole accordingly"""
         for el_table in self.tree.xpath('//*[local-name()="TableRegion"]'):
             for el_cell in el_table.xpath('*[local-name()="TableCell"]'):
                 el_table.remove(el_cell)
@@ -68,6 +71,7 @@ class TranskribusFixer():
                         el_region.append(node)
 
     def fix_textequiv(self):
+        """Convert any //TextEquiv/UnicodeAlternative into additional ../TextEquiv/Unicode"""
         for el_te in self.tree.xpath('//*[local-name()="TextEquiv"]'):
             for el_uni in el_te.xpath('//*[local-name()="UnicodeAlternative"]'):
                 el_te.remove(el_uni)

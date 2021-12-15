@@ -4,10 +4,15 @@ from lxml import etree as ET
 
 from .fixer import TranskribusFixer, NS
 
+FIXERS = [func[4:] for func in dir(TranskribusFixer)
+          if callable(getattr(TranskribusFixer, func)) and func.startswith('fix_')]
+FIXERDOCS = [func + ': ' + getattr(TranskribusFixer, 'fix_' + func).__doc__ for func in FIXERS]
+FIXERS.append('namespace')
+
+
 @command(context_settings={'help_option_names': ['-h', '--help']})
-@option('-f', '--fixes', help="Fixes to apply. Repeatable [default: all].",
-        default=['reading_order', 'table', 'textequiv', 'metadata', 'namespace'],
-        type=Choice(['reading_order', 'table', 'textequiv', 'metadata', 'namespace']), multiple=True)
+@option('-f', '--fixes', help="Fixes to apply. Repeatable [default: all].\n\n" + "\n\n".join(FIXERDOCS),
+        default=FIXERS, type=Choice(FIXERS), multiple=True)
 @option('-V', '--validate', help="Validate output against schema.", is_flag=True)
 @argument('input-file', type=File('r'), nargs=1)
 @argument('output-file', default='-', type=File('w'), nargs=1)
