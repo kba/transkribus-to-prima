@@ -67,6 +67,14 @@ class TranskribusFixer():
                            for suf in ['Region', 'TextLine', 'TextEquiv', 'TextStyle']):
                         el_region.append(node)
 
+    def fix_textequiv(self):
+        for el_te in self.tree.xpath('//*[local-name()="TextEquiv"]'):
+            for el_uni in el_te.xpath('//*[local-name()="UnicodeAlternative"]'):
+                el_te.remove(el_uni)
+                el_tenew = ET.SubElement(el_te.getparent(), '{%s}TextEquiv' % NS2013)
+                el_tenewuni = ET.SubElement(el_tenew, '{%s}Unicode' % NS2013)
+                el_tenewuni.text = el_uni.text
+
     def tostring(self):
         return ET.tostring(self.tree,
                            pretty_print=True,
