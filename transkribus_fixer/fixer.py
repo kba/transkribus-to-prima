@@ -79,6 +79,32 @@ class TranskribusFixer():
                 el_tenewuni = ET.SubElement(el_tenew, '{%s}Unicode' % NS2013)
                 el_tenewuni.text = el_uni.text
 
+    def fix_image_transform(self):
+        """Convert Page/@image(Rotation|Translation|Scaling) to Labels"""
+        el_page = self.tree.find('{*}Page')
+        el_labels = el_page.find('{*}Labels')
+        def new_label(typ, val):
+            nonlocal el_labels
+            if el_labels is None:
+                el_labels = ET.Element('{%s}Labels' % NS2013)
+                el_labels.set('externalModel', 'TranskribusImageTransform')
+                # find position to insert (labels go right before regions)
+                regions = el_page.xpath('*[contains(local-name(),"Region")]')
+                if len(regions):
+                    regions[0].addprevious(el_labels)
+                else:
+                    el_page.append(el_labels)
+            el_label = ET.SubElement(el_labels, '{%s}Label' % NS2013)
+            el_label.set('type', typ)
+            el_label.set('value', val)
+        for label in ['imageRotation',
+                      'imageTranslationX',
+                      'imageTranslationY',
+                      'imageScalingX',
+                      'imageScalingY']:
+            if label in el_page.attrib:
+                new_label(label, el_page.attrib.pop(label))
+
     def tostring(self):
         return ET.tostring(self.tree,
                            pretty_print=True,
