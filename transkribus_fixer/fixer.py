@@ -105,6 +105,24 @@ class TranskribusFixer():
             if label in el_page.attrib:
                 new_label(label, el_page.attrib.pop(label))
 
+    def fix_tag_property_link(self):
+        """Remove Tag, Property and Link elements whereever they appear"""
+        # all known under PageType, RegionType, TextLineType, WordType, GlyphType
+        # Tag known under TextEquivType
+        # Property known under TranskribusMetadataType
+        # ...but we might as well search everywhere
+        # FIXME: convert these to Labels and Relations
+        for node in self.tree.iter():
+            tag = node.find('{*}Tag')
+            if tag is not None:
+                node.remove(tag)
+            prop = node.find('{*}Property')
+            if prop is not None:
+                node.remove(prop)
+            link = node.find('{*}Link')
+            if link is not None:
+                node.remove(link)
+
     def tostring(self):
         return ET.tostring(self.tree,
                            pretty_print=True,
