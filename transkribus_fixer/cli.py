@@ -8,21 +8,21 @@ FIXERS = [func[4:] for func in dir(TranskribusFixer)
           if callable(getattr(TranskribusFixer, func)) and func.startswith('fix_')]
 FIXERDOCS = [func + ': ' + getattr(TranskribusFixer, 'fix_' + func).__doc__ for func in FIXERS]
 FIXERS.append('namespace')
+FIXERDOCS.append('namespace: Also convert PAGE namespace version from 2013 to 2019.')
 
 
 @command(context_settings={'help_option_names': ['-h', '--help']})
 @option('-f', '--fixes', help="Fixes to apply. Repeatable [default: all].\n\n" + "\n\n".join(FIXERDOCS),
         default=FIXERS, type=Choice(FIXERS), multiple=True)
+@option('-I', '--prefer-imgurl', help="use TranskribusMetadata/@imgUrl for @imageFilename if available", is_flag=True)
 @option('-V', '--validate', help="Validate output against schema.", is_flag=True)
 @argument('input-file', type=File('r'), nargs=1)
 @argument('output-file', default='-', type=File('w'), nargs=1)
-def cli(fixes, validate, input_file, output_file):
+def cli(fixes, prefer_imgurl, validate, input_file, output_file):
     """
     Transform (Transkribus PAGE) INPUT_FILE to (PRImA PAGE) OUTPUT_FILE under the chosen fixes.
-
-    Also convert PAGE namespace version from 2013 to 2019.
     """
-    fixer = TranskribusFixer(ET.parse(input_file))
+    fixer = TranskribusFixer(ET.parse(input_file), prefer_imgurl)
     for fix in [f for f in fixes if f != 'namespace']:
         getattr(fixer, f'fix_{fix}')()
     as_str = fixer.tostring()

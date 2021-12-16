@@ -9,20 +9,26 @@ class TranskribusFixer():
     Translates Transkribus variant of PAGE to standard-conformant PAGE
     """
 
-    def __init__(self, tree):
+    def __init__(self, tree, prefer_imgurl=False):
         self.tree = tree
+        self.prefer_imgurl = prefer_imgurl
 
     def fix_metadata(self):
         """Remove any Metadata/TranskribusMetadata"""
-        el_metadata = self.tree.xpath('//*[local-name()="TranskribusMetadata"]')
-        if el_metadata:
-            el_metadata[0].getparent().remove(el_metadata[0])
+        el_page = self.tree.find('{*}Page')
+        el_metadata = self.tree.find('{*}Metadata')
+        if el_metadata is not None:
+            el_metadata = el_metadata.find('{*}TranskribusMetadata')
+        if el_metadata is not None:
+            if self.prefer_imgurl and 'imgUrl' in el_metadata.attrib:
+                el_page.attrib['imageFilename'] = el_metadata.attrib['imgUrl']
+            el_metadata.getparent().remove(el_metadata)
 
     def fix_reading_order(self):
         """Convert ???"""
         ro = self.tree.xpath('//*[local-name()="ReadingOrder"]/*[local-name()="OrderedGroup"]')[0]
         relations = self.tree.xpath('//*[local-name()="Relations"]')
-        if not relations:
+        if not len(relations):
             return
         relations = relations[0]
         for relation in relations.xpath('*[local-name()="Relation"][@type="link"]'):
