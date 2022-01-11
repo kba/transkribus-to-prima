@@ -4,7 +4,7 @@ NS2013 = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15'
 NS2019 = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15'
 NS = {'p2013': NS2013, 'p2019': NS2019}
 
-class TranskribusFixer():
+class TranskribusToPrima():
     """
     Translates Transkribus variant of PAGE to standard-conformant PAGE
     """
@@ -13,7 +13,7 @@ class TranskribusFixer():
         self.tree = tree
         self.prefer_imgurl = prefer_imgurl
 
-    def fix_metadata(self):
+    def convert_metadata(self):
         """Remove any Metadata/TranskribusMetadata"""
         el_page = self.tree.find('{*}Page')
         el_metadata = self.tree.find('{*}Metadata')
@@ -24,7 +24,7 @@ class TranskribusFixer():
                 el_page.attrib['imageFilename'] = el_metadata.attrib['imgUrl']
             el_metadata.getparent().remove(el_metadata)
 
-    def fix_reading_order(self):
+    def convert_reading_order(self):
         """Convert ???"""
         ro = self.tree.xpath('//*[local-name()="ReadingOrder"]/*[local-name()="OrderedGroup"]')[0]
         relations = self.tree.xpath('//*[local-name()="Relations"]')
@@ -44,7 +44,7 @@ class TranskribusFixer():
         if not relations.findall('*'):
             relations.getparent().remove(relations)
 
-    def fix_table(self):
+    def convert_table(self):
         """Convert each TableRegion/TableCell into a TableRegion/TextRegion, writing row/col index/span as new TableCellRole accordingly"""
         for el_table in self.tree.xpath('//*[local-name()="TableRegion"]'):
             for el_cell in el_table.xpath('*[local-name()="TableCell"]'):
@@ -64,7 +64,7 @@ class TranskribusFixer():
                 el_roles = el_region.find('{*}Roles')
                 if el_roles is None:
                     el_roles = ET.SubElement(el_region, '{%s}Roles' % NS2013)
-                # NS2013 does not have TableCellRole, so we implicitly rely on the namespace fixer here
+                # NS2013 does not have TableCellRole, so we implicitly rely on the namespace converter here
                 el_tablecellrole = ET.SubElement(el_roles, '{%s}TableCellRole' % NS2013)
                 el_tablecellrole.set('rowIndex', el_cell.get('row'))
                 el_tablecellrole.set('columnIndex', el_cell.get('col'))
@@ -76,7 +76,7 @@ class TranskribusFixer():
                            for suf in ['Region', 'TextLine', 'TextEquiv', 'TextStyle']):
                         el_region.append(node)
 
-    def fix_textequiv(self):
+    def convert_textequiv(self):
         """Convert any //TextEquiv/UnicodeAlternative into additional ../TextEquiv/Unicode"""
         for el_te in self.tree.xpath('//*[local-name()="TextEquiv"]'):
             for el_uni in el_te.xpath('//*[local-name()="UnicodeAlternative"]'):
@@ -85,7 +85,7 @@ class TranskribusFixer():
                 el_tenewuni = ET.SubElement(el_tenew, '{%s}Unicode' % NS2013)
                 el_tenewuni.text = el_uni.text
 
-    def fix_image_transform(self):
+    def convert_image_transform(self):
         """Convert Page/@image(Rotation|Translation|Scaling) to Labels"""
         el_page = self.tree.find('{*}Page')
         el_labels = el_page.find('{*}Labels')
@@ -111,7 +111,7 @@ class TranskribusFixer():
             if label in el_page.attrib:
                 new_label(label, el_page.attrib.pop(label))
 
-    def fix_tag_property_link(self):
+    def convert_tag_property_link(self):
         """Remove Tag, Property and Link elements whereever they appear"""
         # all known under PageType, RegionType, TextLineType, WordType, GlyphType
         # Tag known under TextEquivType
