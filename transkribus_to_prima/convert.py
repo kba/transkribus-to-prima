@@ -25,7 +25,7 @@ class TranskribusToPrima():
             el_metadata.getparent().remove(el_metadata)
 
     def convert_reading_order(self):
-        """Convert ???"""
+        """Convert reading order from Relations (Transkribus) to ReadingOrder (PRImA)"""
         ro = self.tree.xpath('//*[local-name()="ReadingOrder"]/*[local-name()="OrderedGroup"]')[0]
         relations = self.tree.xpath('//*[local-name()="Relations"]')
         if not len(relations):

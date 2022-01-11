@@ -5,7 +5,7 @@ setup(
     version='0.0.1',
     author="kba, bertsky",
     author_email="unixprog@gmail.com",
-    url="https://github.com/kba/transkribus-to_prima",
+    url="https://github.com/kba/transkribus-to-prima",
     license='Apache License 2.0',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -13,7 +13,7 @@ setup(
     packages=['transkribus_to_prima'],
     entry_points={
         'console_scripts': [
-            'transkribus-to_prima=transkribus_to_prima.cli:cli',
+            'transkribus-to-prima=transkribus_to_prima.cli:cli',
             'page-fix-coordinates=transkribus_to_prima.cli_coordinate_to_prima:cli',
             'page-dimensions-from-image=transkribus_to_prima.set_dimensions_from_image:cli'
         ]
