@@ -1,7 +1,7 @@
 from click import command, argument
 from lxml import etree as ET
 
-from .fixer import TranskribusFixer, NS
+from .convert import TranskribusToPrima, NS
 
 @command()
 @argument('infile')
