@@ -11,7 +11,7 @@ def cli(infile, outfile):
     Due to how PAGE-XML interprets pixels (the center of the pixel, not its
     bottom-right corner), max height is imageHeight - 1, max width is imageWidth -1
 
-    This CLI clips all Coords accordinly.
+    This CLI clips all Coords accordingly.
     """
     tree = ET.parse(infile)
     el_page = tree.xpath("//*[local-name()='Page']")[0]

@@ -159,7 +159,7 @@ Range: -179.999,180</documentation>
 			<attribute name="readingOrientation" type="float"
 				use="optional">
 				<annotation>
-					<documentation>The angle the baseline of text withing a region has to be rotated (relative to the rectangle encapsulating the region) in clockwise direction in order to correct the present skew (negative values indicate anti-clockwise rotation).
+					<documentation>The angle the baseline of text within a region has to be rotated (relative to the rectangle encapsulating the region) in clockwise direction in order to correct the present skew (negative values indicate anti-clockwise rotation).
 Range: -179.999,180</documentation>
 				</annotation>
 			</attribute>

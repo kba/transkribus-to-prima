@@ -112,7 +112,7 @@ class TranskribusToPrima():
                 new_label(label, el_page.attrib.pop(label))
 
     def convert_tag_property_link(self):
-        """Remove Tag, Property and Link elements whereever they appear"""
+        """Remove Tag, Property and Link elements wherever they appear"""
         # all known under PageType, RegionType, TextLineType, WordType, GlyphType
         # Tag known under TextEquivType
         # Property known under TranskribusMetadataType
