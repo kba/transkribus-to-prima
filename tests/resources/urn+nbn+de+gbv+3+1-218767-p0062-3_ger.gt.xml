@@ -1,0 +1,17 @@
+<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" pcGtsId="PAGE_01" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15 http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15/pagecontent.xsd">
+  <Metadata>
+    <Creator>OCR-D/core 2.33.0</Creator>
+    <Created>2022-05-30T05:59:54</Created>
+    <LastChange>2022-05-30T05:59:54</LastChange>
+    <Comments/>
+  </Metadata>
+  <Page imageFilename="MAX/urn+nbn+de+gbv+3+1-218767-p0062-3_ger.png" imageHeight="2186" imageWidth="1422" type="content" primaryLanguage="ger">
+    <AlternativeImage comments="binarized" filename="OCR-D-BINPAGE/OCR-D-BINPAGE_01-BIN_sauvola-ms-split.png"/>
+    <AlternativeImage comments="binarized,cropped" filename="OCR-D-SEG-PAGE-ANYOCR/OCR-D-SEG-PAGE-ANYOCR_01.IMG-CROP.png"/>
+    <AlternativeImage comments="binarized,cropped,despeckled" filename="OCR-D-DENOISE-OCROPY/OCR-D-DENOISE-OCROPY_01.IMG-DESPECK.png"/>
+    <AlternativeImage comments="binarized,cropped,despeckled,binarized,clipped" filename="OCR-D-SEG-BLOCK-TESSERACT/OCR-D-SEG-BLOCK-TESSERACT_01.IMG-BIN.png"/>
+    <Border>
+      <Coords points="142,200 136,2128 1313,2109 1315,172"/>
+    </Border>
+  </Page>
+</PcGts>

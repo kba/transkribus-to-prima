@@ -4,6 +4,7 @@ NS2013 = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15'
 NS2019 = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15'
 NS = {'p2013': NS2013, 'p2019': NS2019}
 
+
 class TranskribusToPrima():
     """
     Translates Transkribus variant of PAGE to standard-conformant PAGE
@@ -26,7 +27,11 @@ class TranskribusToPrima():
 
     def convert_reading_order(self):
         """Convert reading order from Relations (Transkribus) to ReadingOrder (PRImA)"""
-        ro = self.tree.xpath('//*[local-name()="ReadingOrder"]/*[local-name()="OrderedGroup"]')[0]
+        ro_with_oo = self.tree.xpath(
+            '//*[local-name()="ReadingOrder"]/*[local-name()="OrderedGroup"]')
+        if not len(ro_with_oo):
+            return
+        ro = ro_with_oo[0]
         relations = self.tree.xpath('//*[local-name()="Relations"]')
         if not len(relations):
             return
@@ -34,8 +39,10 @@ class TranskribusToPrima():
         for relation in relations.xpath('*[local-name()="Relation"][@type="link"]'):
             region_refs = relation.xpath('*[local-name()="RegionRef"]')
             ro_grp = ET.SubElement(ro, 'OrderedGroupIndexed')
-            ro_grp.set('id', 'relation_link_' + '-'.join([x.get('regionRef') for x in region_refs]))
-            ro_grp.set('index', str(int(ro.xpath('*[local-name()="RegionRefIndexed"]')[-1].get('index')) + 1))
+            ro_grp.set('id', 'relation_link_' +
+                       '-'.join([x.get('regionRef') for x in region_refs]))
+            ro_grp.set('index', str(
+                int(ro.xpath('*[local-name()="RegionRefIndexed"]')[-1].get('index')) + 1))
             for idx, region_ref in enumerate(region_refs):
                 ro_region_ref = ET.SubElement(ro_grp, 'RegionRefIndexed')
                 ro_region_ref.set('regionRef', region_ref.get('regionRef'))
@@ -65,7 +72,8 @@ class TranskribusToPrima():
                 if el_roles is None:
                     el_roles = ET.SubElement(el_region, '{%s}Roles' % NS2013)
                 # NS2013 does not have TableCellRole, so we implicitly rely on the namespace converter here
-                el_tablecellrole = ET.SubElement(el_roles, '{%s}TableCellRole' % NS2013)
+                el_tablecellrole = ET.SubElement(
+                    el_roles, '{%s}TableCellRole' % NS2013)
                 el_tablecellrole.set('rowIndex', el_cell.get('row'))
                 el_tablecellrole.set('columnIndex', el_cell.get('col'))
                 el_tablecellrole.set('rowSpan', el_cell.get('rowSpan', '1'))
@@ -81,7 +89,8 @@ class TranskribusToPrima():
         for el_te in self.tree.xpath('//*[local-name()="TextEquiv"]'):
             for el_uni in el_te.xpath('//*[local-name()="UnicodeAlternative"]'):
                 el_te.remove(el_uni)
-                el_tenew = ET.SubElement(el_te.getparent(), '{%s}TextEquiv' % NS2013)
+                el_tenew = ET.SubElement(
+                    el_te.getparent(), '{%s}TextEquiv' % NS2013)
                 el_tenewuni = ET.SubElement(el_tenew, '{%s}Unicode' % NS2013)
                 el_tenewuni.text = el_uni.text
 
@@ -89,6 +98,7 @@ class TranskribusToPrima():
         """Convert Page/@image(Rotation|Translation|Scaling) to Labels"""
         el_page = self.tree.find('{*}Page')
         el_labels = el_page.find('{*}Labels')
+
         def new_label(typ, val):
             nonlocal el_labels
             if el_labels is None:
