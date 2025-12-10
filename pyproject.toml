@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "transkribus-to-prima"
+version = "0.0.1"
+authors = [{name = "kba", email = "unixprog@gmail.com"}, {name = "bertsky"}]
+license = {text = "Apache License 2.0"}
+dependencies = ["lxml", "click"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://github.com/kba/transkribus-to-prima"
+
+[project.scripts]
+transkribus-to-prima = "transkribus_to_prima.cli:cli"
+page-fix-coordinates = "transkribus_to_prima.cli_coordinate_fixer:cli"
+page-dimensions-from-image = "transkribus_to_prima.set_dimensions_from_image:cli"
+
+[tool.setuptools]
+packages = ["transkribus_to_prima"]
+include-package-data = false
+
+[tool.setuptools.package-data]
+"*" = ["*.xsd"]

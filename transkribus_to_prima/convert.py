@@ -1,3 +1,5 @@
+import datetime as datetime_
+import re as re_
 from lxml import etree as ET
 
 NS2013 = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15'
@@ -19,11 +21,15 @@ class TranskribusToPrima():
         el_page = self.tree.find('{*}Page')
         el_metadata = self.tree.find('{*}Metadata')
         if el_metadata is not None:
-            el_metadata = el_metadata.find('{*}TranskribusMetadata')
-        if el_metadata is not None:
-            if self.prefer_imgurl and 'imgUrl' in el_metadata.attrib:
-                el_page.attrib['imageFilename'] = el_metadata.attrib['imgUrl']
-            el_metadata.getparent().remove(el_metadata)
+            el_transmetadata = el_metadata.find('{*}TranskribusMetadata')
+            if el_transmetadata is not None:
+                if self.prefer_imgurl and 'imgUrl' in el_transmetadata.attrib:
+                    el_page.attrib['imageFilename'] = el_transmetadata.attrib['imgUrl']
+                el_metadata.remove(el_transmetadata)
+            for el_date in self.tree.xpath('//*[local-name()="Created" or local-name()="LastChange"]'):
+                # ensure this is valid xs:dateTime
+                date = gds_parse_datetime(el_date.text.strip())
+                el_date.text = gds_format_datetime(date)
 
     def convert_reading_order(self):
         """Convert reading order from Relations (Transkribus) to ReadingOrder (PRImA)"""
@@ -144,3 +150,54 @@ class TranskribusToPrima():
                            pretty_print=True,
                            xml_declaration=True,
                            encoding='utf-8').decode('utf-8')
+
+# from generateds
+def gds_parse_datetime(input_data):
+    tzoff_pattern = re_.compile('(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00)$')
+    class _FixedOffsetTZ(datetime_.tzinfo):
+        def __init__(self, offset, name):
+            self.__offset = datetime_.timedelta(minutes=offset)
+            self.__name = name
+        def utcoffset(self, dt):
+            return self.__offset
+        def tzname(self, dt):
+            return self.__name
+        def dst(self, dt):
+            return None
+    tz = None
+    if input_data[-1] == 'Z':
+        tz = _FixedOffsetTZ(0, 'UTC')
+        input_data = input_data[:-1]
+    else:
+        results = tzoff_pattern.search(input_data)
+        if results is not None:
+            tzoff_parts = results.group(2).split(':')
+            tzoff = int(tzoff_parts[0]) * 60 + int(tzoff_parts[1])
+            if results.group(1) == '-':
+                tzoff *= -1
+            tz = _FixedOffsetTZ(
+                tzoff, results.group(0))
+            input_data = input_data[:-6]
+    time_parts = input_data.split('.')
+    if len(time_parts) > 1:
+        micro_seconds = int(float('0.' + time_parts[1]) * 1000000)
+        input_data = '%s.%s' % (
+            time_parts[0], "{}".format(micro_seconds).rjust(6, "0"), )
+        dt = datetime_.datetime.strptime(
+            input_data, '%Y-%m-%dT%H:%M:%S.%f')
+    else:
+        dt = datetime_.datetime.strptime(
+            input_data, '%Y-%m-%dT%H:%M:%S')
+    dt = dt.replace(tzinfo=tz)
+    return dt
+
+def gds_format_datetime(input_data):
+    # ignore .microseconds (now allowed in xs:dateTime)
+    return '%04d-%02d-%02dT%02d:%02d:%02d' % (
+        input_data.year,
+        input_data.month,
+        input_data.day,
+        input_data.hour,
+        input_data.minute,
+        input_data.second,
+    )
