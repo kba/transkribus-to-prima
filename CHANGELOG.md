@@ -5,6 +5,8 @@ Versioned according to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## [0.0.2] - 2025-12-10
+
 Fixed:
 
   - convert to pyproject.toml, #22

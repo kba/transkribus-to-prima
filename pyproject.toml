@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "transkribus-to-prima"
-version = "0.0.1"
-authors = [{name = "kba", email = "unixprog@gmail.com"}, {name = "bertsky"}]
+version = "0.0.2"
+authors = [{name = "kba"}, {name = "bertsky"}]
 license = {text = "Apache License 2.0"}
 dependencies = ["lxml", "click"]
 
